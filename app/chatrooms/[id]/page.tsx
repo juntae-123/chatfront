@@ -10,19 +10,12 @@ export default function ChatRoomPage() {
   const params = useParams()
   const router = useRouter()
 
-  
   const rawId = params?.id
   const id: string = Array.isArray(rawId) ? rawId[0] : rawId || ''
   if (!id) return <div>잘못된 방 ID</div>
-  console.log('ChatRoomPage id:', id)
-  console.log('🚀 params in client component:', params)
 
   const username = useAuthStore((s) => s.username)
   const token = useAuthStore((s) => s.token)
-
-  
-  const fetchUrl = (path: string) =>
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/chatrooms/${id}${path}`
 
   const { messages, users, connected, sendMessage } = useChatWebSocket(
     id,
@@ -44,20 +37,17 @@ export default function ChatRoomPage() {
     endRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
- 
+  
   useEffect(() => {
     const registerFcm = async () => {
-      if (!token) return
+      if (!token || typeof window === 'undefined') return
 
-      if (typeof window === 'undefined') return
-
-    
       if (Notification.permission === 'default') {
         await Notification.requestPermission()
       }
 
       if (Notification.permission !== 'granted') {
-        console.warn('FCM: 알림 권한이 거부되었거나 차단됨')
+        console.warn('FCM: 알림 권한이 거부됨')
         return
       }
 
@@ -77,20 +67,28 @@ export default function ChatRoomPage() {
     registerFcm()
 
     onFirebaseMessage((payload) => {
-      console.log('FCM 메시지 수신:', payload)
       const { title, body } = payload.notification || {}
       if (title && body && Notification.permission === 'granted') {
-        new Notification(title, {
-          body,
-          icon: '/chat-icon.png',
-        })
+        new Notification(title, { body, icon: '/chat-icon.png' })
       }
     })
   }, [token])
 
+  
+  const formatTime = (timestamp?: string) => {
+    if (!timestamp) return ''
+    let iso = timestamp
+    if (!timestamp.includes('T')) {
+      iso = timestamp.replace(' ', 'T')
+    }
+    const date = new Date(iso)
+    if (isNaN(date.getTime())) return ''
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  }
+
   return (
     <div className="flex flex-col h-screen bg-black text-white">
-      
+     
       <header className="p-4 border-b flex items-center justify-between">
         <div className="flex gap-2">
           <button
@@ -111,25 +109,28 @@ export default function ChatRoomPage() {
         </div>
       </header>
 
-      
+     
       <main className="flex-1 overflow-y-auto p-4 space-y-2">
         {messages.map((m: ChatRedisMsg, i: number) => {
-          const time = m.timestamp
-            ? new Date(m.timestamp).toLocaleTimeString([], {
-                hour: '2-digit',
-                minute: '2-digit',
-              })
-            : ''
-
+          const time = formatTime(m.timestamp)
           const isMine =
             m.type === 'TALK' &&
             m.sender?.trim().toLowerCase() === username?.trim().toLowerCase()
+
+          const prev = i > 0 ? messages[i - 1] : null
+
+         
+          const showTime = m.type === 'TALK'
 
           return (
             <div
               key={i}
               className={`flex w-full ${
-                m.type === 'TALK' ? (isMine ? 'justify-end' : 'justify-start') : 'justify-center'
+                m.type === 'TALK'
+                  ? isMine
+                    ? 'justify-end'
+                    : 'justify-start'
+                  : 'justify-center'
               }`}
             >
               <div
@@ -143,10 +144,14 @@ export default function ChatRoomPage() {
               >
                 {m.type === 'TALK' ? (
                   <>
-                    {!isMine && <div className="text-sm font-semibold mb-1">{m.sender}</div>}
-                    <div className="flex items-center gap-2">
+                    {!prev || prev.sender !== m.sender ? (
+                      <div className="text-sm font-semibold mb-1">{m.sender}</div>
+                    ) : null}
+                    <div className="flex items-end gap-2">
                       <span>{m.message}</span>
-                      {time && <span className="text-xs text-gray-400">{time}</span>}
+                      {showTime && time && (
+                        <span className="text-xs text-gray-400 whitespace-nowrap">{time}</span>
+                      )}
                     </div>
                   </>
                 ) : (
@@ -162,7 +167,7 @@ export default function ChatRoomPage() {
         <div ref={endRef} />
       </main>
 
-    
+      
       <footer className="p-4 border-t flex gap-2">
         <input
           value={input}

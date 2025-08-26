@@ -33,12 +33,11 @@ export function useChatWebSocket(
   const MAX_RETRY = 5;
   const reconnectTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // 새로고침 시 참여자 리스트 & 기존 채팅 불러오기
   const fetchInitialData = async () => {
     if (!roomId) return;
 
     try {
-      // 1️⃣ 기존 채팅 메시지 (TALK만)
+      
       const resMsgs = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/chatrooms/${roomId}/messages`);
       if (resMsgs.ok) {
         const data = await resMsgs.json();
@@ -54,11 +53,11 @@ export function useChatWebSocket(
         setMessages(initialMessages);
       }
 
-      // 2️⃣ 현재 참여자 리스트
+      
       const resUsers = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/chatrooms/${roomId}/users`);
       if (resUsers.ok) {
         const data: string[] = await resUsers.json();
-        setUsers(data); // 참여자 수 초기화
+        setUsers(data);
       }
     } catch (e) {
       console.error(e);
@@ -97,13 +96,11 @@ export function useChatWebSocket(
       try {
         const data: ChatRedisMsg = JSON.parse(ev.data);
 
-        // ENTER 메시지 중복만 체크
         if (data.type === 'ENTER' &&
             messagesRef.current.some(m => m.type === 'ENTER' && m.sender === data.sender)) {
           return;
         }
 
-        // 참여자 업데이트
         if (data.sender) {
           if (data.type === 'ENTER') {
             setUsers(prev => prev.includes(data.sender!) ? prev : [...prev, data.sender!]);
@@ -112,7 +109,6 @@ export function useChatWebSocket(
           }
         }
 
-        // 메시지 배열에 항상 추가 (TALK, ENTER, LEAVE 모두)
         setMessages(prev => [...prev, data]);
       } catch (e) {
         console.error('Invalid WS message', e);
@@ -160,9 +156,11 @@ export function useChatWebSocket(
       roomId: numericRoomId,
       sender: username,
       message: text,
+      timestamp: new Date().toISOString(),
     };
+
     ws.send(JSON.stringify(msg));
-    setMessages([...messagesRef.current, msg]);
+    setMessages([...messagesRef.current, msg]); 
   };
 
   return { messages, users, connected, sendMessage };
