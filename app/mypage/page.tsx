@@ -28,7 +28,7 @@ export default function MyPage() {
       }
 
       try {
-        const res = await fetch('http://localhost:8080/users/me', {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/me`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
