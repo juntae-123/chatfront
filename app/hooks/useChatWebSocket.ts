@@ -37,7 +37,6 @@ export function useChatWebSocket(
     if (!roomId) return;
 
     try {
-      
       const resMsgs = await fetch(`/api/chatrooms/${roomId}/messages`);
       if (resMsgs.ok) {
         const data = await resMsgs.json();
@@ -80,8 +79,7 @@ export function useChatWebSocket(
       return;
     }
 
-    
-    const url = `${process.env.NEXT_PUBLIC_WS_URL ?? '/api/ws'}/chat?roomId=${numericRoomId}&token=${token}`;
+    const url = `${process.env.NEXT_PUBLIC_WS_URL}/chat?roomId=${numericRoomId}&token=${token}`;
     const ws = new WebSocket(url);
     wsMap.set(numericRoomId, ws);
 

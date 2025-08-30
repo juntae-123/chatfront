@@ -24,20 +24,18 @@ export default function RegisterPage() {
 
     setLoading(true)
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/signup`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/signup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
       })
 
       if (!response.ok) {
-        throw new Error('회원가입에 실패했습니다.')
+        const data = await response.json().catch(() => ({}))
+        throw new Error(data.message || '회원가입에 실패했습니다.')
       }
 
-      
       setSuccess(true)
-
-     
       setTimeout(() => router.push('/login'), 1000)
     } catch (err: any) {
       setError(err.message || '회원가입 중 오류 발생')
@@ -48,7 +46,6 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-black text-white relative">
-      
       {success && (
         <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-green-600 text-white px-4 py-2 rounded-md shadow-md animate-fade-in-out">
           회원가입 완료! 로그인 페이지로 이동 중...
