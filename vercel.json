@@ -2,11 +2,11 @@
     "rewrites": [
       {
         "source": "/api/(.*)",
-        "destination": "http://ec2-54-180-24-80.ap-northeast-2.compute.amazonaws.com:8080/$1"
+        "destination": "https://ec2-54-180-24-80.ap-northeast-2.compute.amazonaws.com/$1"
       },
       {
         "source": "/api/ws/(.*)",
-        "destination": "ws://ec2-54-180-24-80.ap-northeast-2.compute.amazonaws.com:8080/ws/$1"
+        "destination": "wss://ec2-54-180-24-80.ap-northeast-2.compute.amazonaws.com/ws/$1"
       }
     ]
   }
