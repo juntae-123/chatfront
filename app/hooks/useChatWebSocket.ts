@@ -38,7 +38,7 @@ export function useChatWebSocket(
 
     try {
       
-      const resMsgs = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/chatrooms/${roomId}/messages`);
+      const resMsgs = await fetch(`/api/chatrooms/${roomId}/messages`);
       if (resMsgs.ok) {
         const data = await resMsgs.json();
         const initialMessages: ChatRedisMsg[] = data
@@ -53,8 +53,7 @@ export function useChatWebSocket(
         setMessages(initialMessages);
       }
 
-      
-      const resUsers = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/chatrooms/${roomId}/users`);
+      const resUsers = await fetch(`/api/chatrooms/${roomId}/users`);
       if (resUsers.ok) {
         const data: string[] = await resUsers.json();
         setUsers(data);
@@ -81,12 +80,13 @@ export function useChatWebSocket(
       return;
     }
 
-    const url = `${process.env.NEXT_PUBLIC_WS_URL ?? 'ws://localhost:8080'}/ws/chat?roomId=${numericRoomId}&token=${token}`;
+    
+    const url = `${process.env.NEXT_PUBLIC_WS_URL ?? '/api/ws'}/chat?roomId=${numericRoomId}&token=${token}`;
     const ws = new WebSocket(url);
     wsMap.set(numericRoomId, ws);
 
     ws.onopen = () => {
-      console.log('✅ WebSocket connected');
+      console.log('WebSocket connected');
       setConnected(true);
       isConnectingRef.current = false;
       retryCountRef.current = 0;
@@ -116,7 +116,7 @@ export function useChatWebSocket(
     };
 
     ws.onclose = (ev) => {
-      console.log('❌ WebSocket closed', ev.code, ev.reason);
+      console.log('WebSocket closed', ev.code, ev.reason);
       setConnected(false);
       isConnectingRef.current = false;
       wsMap.delete(numericRoomId);

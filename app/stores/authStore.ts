@@ -8,7 +8,7 @@ interface AuthState {
   username: string | null
   setAuth: (auth: { token: string; refreshToken?: string; username: string }) => void
   logout: () => void
-  refreshAuth: () => Promise<boolean> // 토큰 갱신
+  refreshAuth: () => Promise<boolean>
 }
 
 export const useAuthStore = create<AuthState>((set, get) => {
@@ -33,7 +33,11 @@ export const useAuthStore = create<AuthState>((set, get) => {
         localStorage.setItem('username', username)
         if (refreshToken) localStorage.setItem('refreshToken', refreshToken)
       }
-      set({ token, refreshToken: refreshToken ?? get().refreshToken, username })
+      set({
+        token,
+        refreshToken: refreshToken ?? get().refreshToken,
+        username,
+      })
     },
 
     logout: () => {
@@ -50,6 +54,7 @@ export const useAuthStore = create<AuthState>((set, get) => {
       if (!refreshToken) return false
 
       try {
+        
         const res = await fetch('/api/refresh-token', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -58,7 +63,12 @@ export const useAuthStore = create<AuthState>((set, get) => {
 
         if (!res.ok) throw new Error('Failed to refresh token')
         const data = await res.json()
-        get().setAuth({ token: data.token, refreshToken: data.refreshToken, username: get().username! })
+
+        get().setAuth({
+          token: data.token,
+          refreshToken: data.refreshToken,
+          username: get().username!,
+        })
         return true
       } catch (e) {
         console.error('Token refresh failed', e)
