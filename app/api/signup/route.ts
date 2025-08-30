@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const BACKEND_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL?.replace('/api', '') ||
-  'https://54.180.24.80:8080';
+  'process.env.NEXT_PUBLIC_API_BASE_URL';
 
 export async function POST(req: NextRequest) {
   try {
