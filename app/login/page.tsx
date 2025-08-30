@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuthStore } from '../stores/authStore'
-import { requestFirebaseToken } from '../firebase/initFirebase' // FCM 토큰 요청 함수
+import { requestFirebaseToken } from '../firebase/initFirebase' 
 
 export default function LoginPage() {
   const router = useRouter()
