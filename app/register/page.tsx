@@ -24,7 +24,7 @@ export default function RegisterPage() {
 
     setLoading(true)
     try {
-      // Vercel API Route를 거치지 않고 EC2 백엔드로 직접 요청
+      
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/signup`,
         {
@@ -42,7 +42,7 @@ export default function RegisterPage() {
       setSuccess(true)
       setTimeout(() => router.push('/login'), 1000)
     } catch (err: any) {
-      setError(err.message || '회원가입 중 오류 발생')
+      setError(err.message || '회원가입 중 오류 발생했습니다')
     } finally {
       setLoading(false)
     }
