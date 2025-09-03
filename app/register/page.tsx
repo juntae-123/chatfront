@@ -24,11 +24,15 @@ export default function RegisterPage() {
 
     setLoading(true)
     try {
-      const response = await fetch(`/api/signup`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
-      })
+      // Vercel API Route를 거치지 않고 EC2 백엔드로 직접 요청
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/signup`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password }),
+        }
+      )
 
       if (!response.ok) {
         const data = await response.json().catch(() => ({}))
