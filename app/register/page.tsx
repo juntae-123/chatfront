@@ -35,8 +35,8 @@ export default function RegisterPage() {
       )
 
       if (!response.ok) {
-        const data = await response.json().catch(() => ({}))
-        throw new Error(data.message || '회원가입에 실패했습니다.')
+        const text = await response.text() 
+        throw new Error(text || '회원가입에 실패했습니다.')
       }
 
       setSuccess(true)
