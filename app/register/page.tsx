@@ -12,6 +12,7 @@ export default function RegisterPage() {
   const [success, setSuccess] = useState(false)
   const [loading, setLoading] = useState(false)
 
+ 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
@@ -24,7 +25,6 @@ export default function RegisterPage() {
 
     setLoading(true)
     try {
-      
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/signup`,
         {
@@ -42,7 +42,7 @@ export default function RegisterPage() {
       setSuccess(true)
       setTimeout(() => router.push('/login'), 1000)
     } catch (err: any) {
-      setError(err.message || '회원가입 중 오류 발생했습니다')
+      setError(err.message || '회원가입 중 오류가 발생했습니다.')
     } finally {
       setLoading(false)
     }
@@ -64,6 +64,7 @@ export default function RegisterPage() {
 
         {error && <p className="text-red-500 mb-4 text-sm">{error}</p>}
 
+
         <div className="mb-4">
           <label className="block mb-1 text-sm font-medium">아이디</label>
           <input
@@ -75,6 +76,7 @@ export default function RegisterPage() {
           />
         </div>
 
+
         <div className="mb-4">
           <label className="block mb-1 text-sm font-medium">비밀번호</label>
           <input
@@ -85,7 +87,6 @@ export default function RegisterPage() {
             required
           />
         </div>
-
         <div className="mb-6">
           <label className="block mb-1 text-sm font-medium">비밀번호 확인</label>
           <input
@@ -115,13 +116,24 @@ export default function RegisterPage() {
           </span>
         </p>
       </form>
-
       <style jsx>{`
         @keyframes fade-in-out {
-          0% { opacity: 0; transform: translateY(-10px); }
-          10% { opacity: 1; transform: translateY(0); }
-          90% { opacity: 1; transform: translateY(0); }
-          100% { opacity: 0; transform: translateY(-10px); }
+          0% {
+            opacity: 0;
+            transform: translateY(-10px);
+          }
+          10% {
+            opacity: 1;
+            transform: translateY(0);
+          }
+          90% {
+            opacity: 1;
+            transform: translateY(0);
+          }
+          100% {
+            opacity: 0;
+            transform: translateY(-10px);
+          }
         }
         .animate-fade-in-out {
           animation: fade-in-out 2s forwards;
